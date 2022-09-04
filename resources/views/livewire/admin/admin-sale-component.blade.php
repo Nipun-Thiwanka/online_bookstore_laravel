@@ -1,43 +1,41 @@
 <div>
-    <div class="container" style="padding: 30px 0">
+    <div class="container" style="padding: 30px 0;">
         <div class="row">
             <div class="col-md-12">
                 <div class="panel panel-deafult">
                     <div class="panel-heading">
-                        <div class="row">
-                            <div class="col-md-6">
-                                Edit Category
-                            </div>
-                            <div class="col-md-6">
-                                <a href="{{ route('admin.categories') }}" class="btn btn-success pull-right">All Categories</a>
-                        </div>
+                        Sale Setting
                     </div>
                     <div class="panel-body">
-                        @if(Session::has('message'))
+                        @if (Session::has('message'))
                             <div class="alert alert-success" role="alert">{{ Session::get('message') }}</div>
+                            
                         @endif
-                        <form class= "form-horizontal" wire:submit.prevent="updateCategory">
+                        <form class="form-horizontal" wire:submit.prevent="updateSale">
                             <div class="form-group">
-                                <label class="col-md-4 control-label">Category Name</label>
+                                <label class="col-md-4 control-label">Status</label>
                                 <div class="col-md-4">
-                                    <input type="text" placeholder="Category Name" class="form-control input-md" wire:model="name" wire:keyup="generateslug"/>
-                                    
-                                   
+                                    <select class="form-control" wire:model="status">
+                                        <option value="0">Inactive</option>
+                                        <option value="1">Active</option>
+                                    </select>
                                 </div>
                             </div>
+
                             <div class="form-group">
-                                <label class="col-md-4 control-label">Category Slug</label>
+                                <label class="col-md-4 control-label">Sale Date</label>
                                 <div class="col-md-4">
-                                    <input type="text" placeholder="Category Slug" class="form-control input-md" wire:model="slug"/>
-                                    
+                                    <input type="text" id="sale-date" placeholder="YYYY/MM/DD H:M:S" class="form-control input-md" wire:model="sale_date"  />
                                 </div>
                             </div>
+
                             <div class="form-group">
                                 <label class="col-md-4 control-label"></label>
                                 <div class="col-md-4">
                                     <button type="submit" class="btn btn-primary">Update</button>
                                 </div>
                             </div>
+
                         </form>
                     </div>
                 </div>
@@ -45,4 +43,17 @@
         </div>
     </div>
 </div>
-
+@push('scripts')
+    <script>
+        $(function(){
+            $('#sale-date').datetimepicker({
+                format : 'Y-MM-DD h:m:s',
+            })
+            .on('dp.change',function(ev){
+                var data = $('#sale-date').val();
+                @this.set('sale_date',data);
+            });
+        });
+    </script>
+    
+@endpush

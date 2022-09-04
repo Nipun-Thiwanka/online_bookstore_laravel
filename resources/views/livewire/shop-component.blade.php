@@ -53,10 +53,37 @@
                     </div>
 
                 </div><!--end wrap shop control-->
-
+                <style>
+                    .product-wish {
+                        position: absolute;
+                        top: 10%;
+                        left: 0;
+                        z-index: 99;
+                        right: 30px;
+                        text-align: right;
+                        padding: 0;
+                        border-radius: 0 0 0 5px;
+                    }
+                    .product-wish .fa {
+                        color: #aaaaaa;
+                        opacity: 0.3;
+                        font-size: 32px;
+                    }
+                    .product-wish .fa:hover{
+                        color: #FF2832;
+                        opacity: 1;
+                    }
+                    .fill-heart {
+                        color: #FF2832 !important;
+                        opacity: 1 !important;
+                    }
+                </style>
                 <div class="row">
 
                     <ul class="product-list grid-products equal-container">
+                        @php
+                            $witems = Cart::instance('wishlist')->content()->pluck('id');
+                        @endphp
                         @foreach ($products as $product)
                         <li class="col-lg-4 col-md-6 col-sm-6 col-xs-6 ">
                             <div class="product product-style-3 equal-elem ">
@@ -69,6 +96,13 @@
                                     <a href="{{ route('product.details',['slug'=>$product->slug]) }}" class="product-name"><span>{{ $product->name }}</span></a>
                                     <div class="wrap-price"><span class="product-price">Rs.{{ $product->regular_price }}</span></div>
                                     <a href="#" class="btn add-to-cart" wire:click.prevent="store({{ $product->id}},'{{ $product->name }}',{{ $product->regular_price }})">Add To Cart</a>
+                                    <div class="product-wish">
+                                        @if ($witems->contains($product->id))
+                                            <a href="#" wire:click.prevent="removeFromWishlist({{ $product->id }})"><i class="fa fa-heart fill-heart"></i></a>
+                                        @else
+                                            <a href="#" wire:click.prevent="addToWishlist({{ $product->id}},'{{ $product->name }}',{{ $product->regular_price }})"><i class="fa fa-heart"></i></a>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                         </li>
@@ -125,16 +159,15 @@
                 </div><!-- brand widget-->
 
                 <div class="widget mercado-widget filter-widget price-filter">
-                    <h2 class="widget-title">Price</h2>
+                    <h2 class="widget-title">Price <span class="text-info">Rs.{{ $min_price }} - Rs.{{ $max_price }}</span></h2>
                     <div class="widget-content">
-                        <div id="slider-range"></div>
-                        <p>
-                            <label for="amount">Price:</label>
-                            <input type="text" id="amount" readonly>
-                            <button class="filter-submit">Filter</button>
-                        </p>
+                        <div id="slider" wire:ignore></div>
                     </div>
-                </div><!-- Price-->
+                    <div>
+                        <br><br><br>
+                    </div>
+                </div>
+                <!-- Price-->
 
                 <div class="widget mercado-widget filter-widget">
                     <h2 class="widget-title">Publisher</h2>
@@ -236,3 +269,26 @@
     </div><!--end container-->
 
 </main>
+@push('scripts')
+    <script>
+        var slider = document.getElementById('slider');
+        noUiSlider.create(slider, {
+            start: [10, 5000],
+            connect: true,
+            range: {
+                'min': 10,
+                'max': 5000
+            },
+            pips: {
+                mode: 'steps',
+                srepped: true,
+                density: 4
+            }
+        });
+
+        slider.noUiSlider.on('update', function(values) {
+            @this.set('min_price', values[0]);
+            @this.set('max_price', values[1]);
+        });
+    </script>
+@endpush

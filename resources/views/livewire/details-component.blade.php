@@ -43,13 +43,13 @@
                         <div class="isbn-info">
                             <p class="isbn-name"><b>{{ $product->ISBN_13 }}</b></p>
                         </div>
-                        {{-- <div class="short-desc">
-                            {{ $product->short_description }}
-                        </div> --}}
+                        <div class="short-desc">
+                            {!! $product->short_description !!}
+                        </div>
                         <div class="wrap-social">
                             <a class="link-socail" href="#"><img src="{{ asset('assets/images/social-list.png') }}" alt=""></a>
                         </div>
-                        @if ($product->sale_price > 0)
+                        @if ($product->sale_price > 0 && $sale->status == 1 && $sale->sale_date > Carbon\Carbon::now())
                             <div class="wrap-price">
                                 <span class="product-price">Rs.{{ $product->sale_price }}</span>
                                 <del><span class="product-price regprice">Rs.{{ $product->regular_price }}</span></del>
@@ -88,7 +88,11 @@
                             </div>
                         </div>
                         <div class="wrap-butons">
+                            @if ($product->sale_price > 0 && $sale->status == 1 && $sale->sale_date > Carbon\Carbon::now())
+                            <a href="#" class="btn add-to-cart" wire:click.prevent="store({{ $product->id }},'{{ $product->name }}',{{ $product->sale_price }})">Add to Cart</a>
+                            @else
                             <a href="#" class="btn add-to-cart" wire:click.prevent="store({{ $product->id }},'{{ $product->name }}',{{ $product->regular_price }})">Add to Cart</a>
+                            @endif
                             <div class="wrap-btn">
                                 <a href="#" class="btn btn-compare">Add Compare</a>
                                 <a href="#" class="btn btn-wishlist">Add Wishlist</a>
@@ -103,7 +107,7 @@
                         </div>
                         <div class="tab-contents">
                             <div class="tab-content-item active" id="description">
-                                {{ $product->description }}
+                                {!! $product->description !!}
                             </div>
                             <div class="tab-content-item " id="add_infomation">
                                 <table class="shop_attributes">
@@ -301,3 +305,4 @@
     </div><!--end container-->
 
 </main>
+
